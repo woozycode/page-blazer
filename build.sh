@@ -1,1 +1,1 @@
-python3 src/main.py "/page-blazer/"
+python3 src/main.py "/page-blazer"
