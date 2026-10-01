@@ -101,8 +101,8 @@ def generate_page(basepath:str, from_path:str, template_path:str, dest_path:str)
     logger.info("Updating html template...")
     template = template.replace("{{ Title }}", page_title)
     template = template.replace("{{ Content }}", html_string)
-    template = template.replace('href="/', f'href="{basepath}')
-    template = template.replace('src="/', f'src="{basepath}')
+    template = template.replace('href="/', 'href="' + basepath)
+    template = template.replace('src="/', 'src="' + basepath)
 
     try:
         logger.info(f"Writing updated html page to {dest_path}")
