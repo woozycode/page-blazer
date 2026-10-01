@@ -9,9 +9,12 @@ from htmlnode import ParentNode
 
 logger = logging.getLogger(__name__)
 
-basepath = sys.argv[0]
-if basepath is None:
-    basepath = "/"
+dir_path_static = "./static"
+dir_path_public = "./docs"
+dir_path_content = "./content"
+template_path = "./template.html"
+default_basepath = "/"
+
 
 def static_to_public(source_dir:str, destination_dir:str) -> None:
     logger.info("Copying static files to docs...")
@@ -143,6 +146,11 @@ def generate_pages_recursive(basepath:str, dir_path_content:str, template_path:s
 def main() -> None:
     logging.basicConfig(filename="page-blazer.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filemode="w")
     logger.info("Starting...")
+    basepath = default_basepath
+
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+
     static_to_public(source_dir="static", destination_dir="docs")
     generate_pages_recursive(basepath=basepath, dir_path_content="content", template_path="template.html", dest_dir_path="docs")
     logger.info("Finished")
