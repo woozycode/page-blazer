@@ -10,7 +10,7 @@ from htmlnode import ParentNode
 logger = logging.getLogger(__name__)
 
 basepath = sys.argv[0]
-if not basepath:
+if basepath is None:
     basepath = "/"
 
 def static_to_public(source_dir:str, destination_dir:str) -> None:
