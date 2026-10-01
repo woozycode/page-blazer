@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import shutil
 import pathlib
@@ -8,18 +9,21 @@ from htmlnode import ParentNode
 
 logger = logging.getLogger(__name__)
 
+basepath = sys.argv[0]
+if not basepath:
+    basepath = "/"
 
 def static_to_public(source_dir:str, destination_dir:str) -> None:
-    logger.info("Copying static files to public...")
+    logger.info("Copying static files to docs...")
 
     if "static" not in source_dir:
         raise ValueError("Error: invalid source directory")
-    if "public" not in destination_dir:
+    if "docs" not in destination_dir:
         raise ValueError("Error: invalid destination directory")
     if not os.path.exists(source_dir):
         raise ValueError(f"Error: {source_dir} does not exist")
     if not os.path.exists(destination_dir):
-        raise ValueError(f"Error: {destination_dir} does not exist")
+        os.makedirs(destination_dir)
 
     # Delete contents of destination dir to ensure clean copy
     for filename in os.listdir(destination_dir):
@@ -73,7 +77,7 @@ def extract_title(markdown:str) -> str:
     return markdown.split("# ")[0].strip()
 
 
-def generate_page(from_path:str, template_path:str, dest_path:str) -> None:
+def generate_page(basepath:str, from_path:str, template_path:str, dest_path:str) -> None:
     logger.info(f"Generating page from {from_path} to {dest_path}...")
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
@@ -97,6 +101,8 @@ def generate_page(from_path:str, template_path:str, dest_path:str) -> None:
     logger.info("Updating html template...")
     template = template.replace("{{ Title }}", page_title)
     template = template.replace("{{ Content }}", html_string)
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
 
     try:
         logger.info(f"Writing updated html page to {dest_path}")
@@ -111,7 +117,7 @@ def generate_page(from_path:str, template_path:str, dest_path:str) -> None:
         raise
 
 
-def generate_pages_recursive(dir_path_content:str, template_path:str, dest_dir_path:str) -> None:
+def generate_pages_recursive(basepath:str, dir_path_content:str, template_path:str, dest_dir_path:str) -> None:
     directory_items = os.listdir(dir_path_content)
     logger.info(f"Gathering items from directory {dir_path_content}...")
     for item in directory_items:
@@ -128,23 +134,17 @@ def generate_pages_recursive(dir_path_content:str, template_path:str, dest_dir_p
             logger.info(f"Item dest path stem: {item_dest_path_stem}")
             item_dest_path = os.path.join(dest_dir_path, item_dest_path_stem, "index.html")
             logger.info(f"Item destination path: {item_dest_path}")
-            generate_page(from_path=item_src_path, template_path=template_path, dest_path=item_dest_path)
+            generate_page(basepath=basepath, from_path=item_src_path, template_path=template_path, dest_path=item_dest_path)
         elif not os.path.isfile(item_src_path):
             logger.info(f"Item at path {item_src_path} is a directory")
-            generate_pages_recursive(dir_path_content=item_src_path, template_path=template_path, dest_dir_path=dest_dir_path)
+            generate_pages_recursive(basepath=basepath, dir_path_content=item_src_path, template_path=template_path, dest_dir_path=dest_dir_path)
 
 
 def main() -> None:
     logging.basicConfig(filename="page-blazer.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', filemode="w")
     logger.info("Starting...")
-
-    node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(node)
-
-    static_to_public(source_dir="static", destination_dir="public")
-
-    generate_pages_recursive(dir_path_content="content", template_path="template.html", dest_dir_path="public")
-
+    static_to_public(source_dir="static", destination_dir="docs")
+    generate_pages_recursive(basepath=basepath, dir_path_content="content", template_path="template.html", dest_dir_path="docs")
     logger.info("Finished")
 
 
