@@ -31,7 +31,7 @@ class TestTextNode(unittest.TestCase):
         )
 
 
-class TestTextNodeToTHMLNode(unittest.TestCase):
+class TestTextNodeToHTMLNode(unittest.TestCase):
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
@@ -44,7 +44,8 @@ class TestTextNodeToTHMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
         self.assertEqual(
-            html_node.props, {"src": "https://www.boot.dev", "alt": "This is an image"}
+            html_node.props,
+            {"src": "https://www.boot.dev", "alt": "This is an image"},
         )
 
     def test_bold(self):

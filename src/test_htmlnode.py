@@ -18,26 +18,50 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_values(self):
         node = HTMLNode(
-            tag="div",
-            value="I wish I could read",
+            "div",
+            "I wish I could read",
         )
-        self.assertEqual(node.tag, "div")
-        self.assertEqual(node.value, "I wish I could read")
-        self.assertEqual(node.children, None)
-        self.assertEqual(node.props, None)
+        self.assertEqual(
+            node.tag,
+            "div",
+        )
+        self.assertEqual(
+            node.value,
+            "I wish I could read",
+        )
+        self.assertEqual(
+            node.children,
+            None,
+        )
+        self.assertEqual(
+            node.props,
+            None,
+        )
 
     def test_repr(self):
-        node = HTMLNode("p", "What a strange world", None, {"class": "primary"})
+        node = HTMLNode(
+            "p",
+            "What a strange world",
+            None,
+            {"class": "primary"},
+        )
         self.assertEqual(
             node.__repr__(),
             "HTMLNode(p, What a strange world, children: None, {'class': 'primary'})",
         )
 
-    def test_to_html_no_children(self):
+    def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
-    def test_to_html_no_tag(self):
+    def test_leaf_to_html_a(self):
+        node = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        self.assertEqual(
+            node.to_html(),
+            '<a href="https://www.google.com">Click me!</a>',
+        )
+
+    def test_leaf_to_html_no_tag(self):
         node = LeafNode(None, "Hello, world!")
         self.assertEqual(node.to_html(), "Hello, world!")
 
@@ -61,13 +85,13 @@ class TestHTMLNode(unittest.TestCase):
             [
                 LeafNode("b", "Bold text"),
                 LeafNode(None, "Normal text"),
-                LeafNode("i", "Italic text"),
+                LeafNode("i", "italic text"),
                 LeafNode(None, "Normal text"),
             ],
         )
         self.assertEqual(
             node.to_html(),
-            "<p><b>Bold text</b>Normal text<i>Italic text</i>Normal text</p>",
+            "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>",
         )
 
     def test_headings(self):
@@ -76,13 +100,13 @@ class TestHTMLNode(unittest.TestCase):
             [
                 LeafNode("b", "Bold text"),
                 LeafNode(None, "Normal text"),
-                LeafNode("i", "Italic text"),
+                LeafNode("i", "italic text"),
                 LeafNode(None, "Normal text"),
             ],
         )
         self.assertEqual(
             node.to_html(),
-            "<h2><b>Bold text</b>Normal text<i>Italic text</i>Normal text</h2>",
+            "<h2><b>Bold text</b>Normal text<i>italic text</i>Normal text</h2>",
         )
 
 
